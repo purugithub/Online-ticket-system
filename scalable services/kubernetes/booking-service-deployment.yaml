@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: booking-service
+  labels:
+    app: booking-service
+spec:
+  replicas: 1  # Start with 1 replica, it will scale based on HPA
+  selector:
+    matchLabels:
+      app: booking-service
+  template:
+    metadata:
+      labels:
+        app: booking-service
+    spec:
+      containers:
+        - name: booking-service
+          image: hariprasad095/2023mt03165-bookingservice:latest  # Replace with your Docker image
+          ports:
+            - containerPort: 5002
+          env:
+            - name: SQLALCHEMY_DATABASE_URI
+              value: "postgresql://postgres:yourpassword@postgresql:5432/user_db"
+            - name: SQLALCHEMY_TRACK_MODIFICATIONS
+              value: "False"
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "250m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: user-service
+spec:
+  type: NodePort  # Change this from ClusterIP to NodePort
+  ports:
+    - port: 80               # Port on the cluster
+      targetPort: 5002       # Port your app listens on
+      nodePort: 30002        # Optional: you can specify or let Kubernetes auto-assign it
+  selector:
+    app: user-service
