@@ -35,7 +35,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: user-service
+  name: booking-service
 spec:
   type: NodePort  # Change this from ClusterIP to NodePort
   ports:
@@ -43,4 +43,4 @@ spec:
       targetPort: 5002       # Port your app listens on
       nodePort: 30002        # Optional: you can specify or let Kubernetes auto-assign it
   selector:
-    app: user-service
+    app: booking-service
